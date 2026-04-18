@@ -1,0 +1,118 @@
+const mongoose  = require("mongoose");
+ 
+ const validator = require("validator");
+ const jwt = require('jsonwebtoken')
+ const bcrypt = require("bcrypt")
+ 
+
+ 
+
+const userSchema =  new mongoose.Schema({
+
+    firstName:{
+        type:String,
+        maxLength:40,
+        minLength:2,
+        trim:true,
+        required:[true," please fill firstName"]
+    },
+    lastName:{
+        type:String,
+        maxLength:40,
+        minLength:2,
+         trim:true,
+        required:[true," please fill firstName"]
+
+
+    },
+
+    email:{
+        type:String,
+        maxLength:50,
+        minLength:5,
+        lowercase:true,
+        unique:[true,"email al ready exit"],
+        required:[true,"please fill email"],
+        trim:true,
+        validator(value){
+            if(!validator.isEmail(value)){
+                throw new Error("invalid email")
+            }
+        }
+ 
+    },
+    password:{
+     type:String,
+     required:[true,"password is required"],
+     trim:true,
+     validator(value){
+        if(!validator.isStrongPassword(value)){
+            throw new Error("invalid password")
+        }
+     }
+
+    },
+    phone:{
+        type:String,
+        maxLength:13,
+        minLength:9,
+        validator(value){
+           if(!validator.isMobilePhone(value)){
+            throw new Error("invalid phone number")
+           }
+        }
+
+    },
+
+     
+  // Optional Fields
+  dateOfBirth: {
+    type: Date,
+    required: false
+  },
+  
+  gender:{
+    type:String,
+    enum:["male","female"]
+  },
+  role:{
+    type:String,
+    enum:["user","admin"],
+    required:[true,"please role?"],
+    default:"user"
+  },
+  status:{
+    type:String,
+    enum:["pending","block","active","suspended"],
+    default:"active"
+    
+  },
+  photoImage:{
+      type:String,
+      trim:true,
+  }
+},{timestamps:true})
+
+
+
+
+
+
+userSchema.methods.getJWT= async function () {
+    const user = this;
+    const token = await jwt.sign({_id:user._id},process.env.SIMS_Secret,{expiresIn:"1d"});
+    return token
+}
+userSchema.methods.ValidatePassword= async function (InputPassword){
+    const user = this;
+    const HashPassword = this.password
+    const isValidPassword = await bcrypt.compare(InputPassword,HashPassword);
+    return isValidPassword
+    
+}
+
+const userModel = mongoose.model("User",userSchema)
+module.exports=userModel
+
+//DATABASE_URL=mongodb://localhost:27017/SIMS
+//SIMS_Secret =SIMS@^@bjgsbnNSB137889
