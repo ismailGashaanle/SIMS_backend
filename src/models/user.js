@@ -1,6 +1,6 @@
 const mongoose  = require("mongoose");
  
- const validator = require("validator");
+ const validator  = require("validator");
  const jwt = require('jsonwebtoken')
  const bcrypt = require("bcrypt")
  
@@ -31,10 +31,10 @@ const userSchema =  new mongoose.Schema({
         maxLength:50,
         minLength:5,
         lowercase:true,
-        unique:[true,"email al ready exit"],
+        unique:true,
         required:[true,"please fill email"],
         trim:true,
-        validator(value){
+        validate(value){
             if(!validator.isEmail(value)){
                 throw new Error("invalid email")
             }
@@ -45,7 +45,7 @@ const userSchema =  new mongoose.Schema({
      type:String,
      required:[true,"password is required"],
      trim:true,
-     validator(value){
+     validate(value){
         if(!validator.isStrongPassword(value)){
             throw new Error("invalid password")
         }
@@ -56,7 +56,7 @@ const userSchema =  new mongoose.Schema({
         type:String,
         maxLength:13,
         minLength:9,
-        validator(value){
+        validate(value){
            if(!validator.isMobilePhone(value)){
             throw new Error("invalid phone number")
            }
@@ -90,6 +90,7 @@ const userSchema =  new mongoose.Schema({
   photoImage:{
       type:String,
       trim:true,
+      default:"https://www.iconpacks.net/icons/2/free-user-icon-3296-thumb.png"
   }
 },{timestamps:true})
 

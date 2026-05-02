@@ -26,6 +26,11 @@ const applicationSchema  = mongoose.Schema({
        trim:true,
        lowercase:true,
     },
+    status:{
+        type:String,
+        enum:["pending","verfied","cancel" , "rejected"],
+        default:"pending"
+    },
     email:{
       type:String,
       required:[true,"please fill email"],
@@ -33,6 +38,9 @@ const applicationSchema  = mongoose.Schema({
       lowercase:true,
       unique:true,
     },
+    approvalLetter: {
+        type: String
+        },
     phone:{
         type:String,
         required:[true,"please fill phone number"],

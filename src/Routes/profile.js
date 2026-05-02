@@ -6,7 +6,7 @@ const UserAuth = require("../middlewares/Auth")
 const User = require("../models/user")
 const {ValidateProfileUpdate}= require("../utils/CheckValidate")
 
-const SavedUserData=["firstName","lastName","gender","age","role","phone","photoImage","email"]
+const SavedUserData=["firstName","lastName","gender","status","age","role","phone","photoImage","email"]
 
 profileRouter.get("/profile/view",UserAuth,async(req,res)=>{
 

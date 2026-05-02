@@ -11,6 +11,7 @@ ApplicationRouter.post("/application",userAuth,async(req,res)=>{
    const {ApplicationValidate} = require("../utils/CheckValidate")
 
     try{
+        
     if(!ApplicationValidate(req)){
         throw new Error("invalid new application");
     }
@@ -19,8 +20,12 @@ const logginUser=req.user
    
       if(logginUser.role==="admin"){
         throw new Error("you are admin role not able to document upload or create new application")
+      };
+         if(logginUser.status ==="block"){
+        throw new Error("you can't access to submit application contact Admin ")
       }
        
+   
         const { userId, fullName,
            ApplicationType,
            email,
@@ -55,6 +60,13 @@ const logginUser=req.user
 
         })
 
+  const findPreviousApplication = await applicationModel.findOne({
+  userId: logginUser._id
+})
+
+if (findPreviousApplication) {
+  throw new Error("already you applied")
+}
 
 
         await application.save()
@@ -67,7 +79,7 @@ const logginUser=req.user
         
 
     }catch(err){
-        res.json({
+        res.status(400).json({
             message:err.message
         })
     }
@@ -78,6 +90,11 @@ const logginUser=req.user
 ApplicationRouter.get("/getMyApplication",userAuth,async(req,res)=>{
 
     try{
+
+        const logginUser=req.user
+        if(logginUser.role ==="admin"){
+            throw new Error("not authroized Admin to create Application")
+        }
  const userId = req.user._id
         const application= await applicationModel.find({userId:userId})
        
@@ -90,7 +107,7 @@ ApplicationRouter.get("/getMyApplication",userAuth,async(req,res)=>{
         })
 
     }catch(err){
-        res.json({
+        res.status(400).json({
             message:err.message
         })
     }
